@@ -6,6 +6,12 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./DisplayTechIcons";
 
+interface Feedback {
+  createdAt: string;
+  totalScore: number;
+  finalAssessment: string;
+}
+
 interface InterviewCardProps {
   id: string;
   role: string;
@@ -14,7 +20,7 @@ interface InterviewCardProps {
   techstack: string[];
   questions: string[];
   finalized: boolean;
-  coverImage: string;
+  coverImage?: string;
   createdAt: string;
 }
 
@@ -26,7 +32,7 @@ const InterviewCard = ({
   techstack,
   questions,
   finalized,
-  coverImage,
+  coverImage = getRandomInterviewCover(),
   createdAt,
 }: InterviewCardProps) => {
   const feedback = null as Feedback | null;
