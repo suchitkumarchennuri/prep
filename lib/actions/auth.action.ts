@@ -33,20 +33,15 @@ export async function signUp(params: SignUpParams) {
       success: true,
       message: "Account created successfully",
     };
-  } catch (e: any) {
-    console.error("Firestore error during sign up:", e);
-    console.error("Error details:", {
-      code: e.code,
-      message: e.message,
-      stack: e.stack,
-    });
-
-    if (e.code === "auth/email-already-exists") {
-      return {
-        success: false,
-        message: "Email already exists",
-      };
+  } catch (error: unknown) {
+    console.error("Firestore error during sign up:", error);
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+      });
     }
+
     return {
       success: false,
       message: "Failed to create account",
@@ -71,8 +66,8 @@ export async function signIn(params: SignInParams) {
       success: true,
       message: "Signed in successfully",
     };
-  } catch (e: any) {
-    console.error("Sign in error:", e);
+  } catch (error: unknown) {
+    console.error("Sign in error:", error);
     return {
       success: false,
       message: "Failed to sign in",
@@ -104,7 +99,7 @@ export async function signOut() {
       success: true,
       message: "Signed out successfully",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Sign out error:", error);
     return {
       success: false,

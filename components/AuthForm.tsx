@@ -115,47 +115,51 @@ const AuthForm = ({ type }: { type: FormType }) => {
             },
           });
           route.push("/");
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error("Sign in error:", error);
-          if (error.code === "auth/invalid-credential") {
-            toast.error("Invalid email or password", {
-              style: {
-                background: "#ef4444",
-                color: "#ffffff",
-              },
-            });
-          } else if (error.code === "auth/user-not-found") {
-            toast.error("No account found with this email", {
-              style: {
-                background: "#ef4444",
-                color: "#ffffff",
-              },
-            });
-          } else if (error.code === "auth/wrong-password") {
-            toast.error("Incorrect password", {
-              style: {
-                background: "#ef4444",
-                color: "#ffffff",
-              },
-            });
-          } else {
-            toast.error(`Authentication error: ${error.message}`, {
-              style: {
-                background: "#ef4444",
-                color: "#ffffff",
-              },
-            });
+          if (error instanceof Error) {
+            if (error.message.includes("invalid-credential")) {
+              toast.error("Invalid email or password", {
+                style: {
+                  background: "#ef4444",
+                  color: "#ffffff",
+                },
+              });
+            } else if (error.message.includes("user-not-found")) {
+              toast.error("No account found with this email", {
+                style: {
+                  background: "#ef4444",
+                  color: "#ffffff",
+                },
+              });
+            } else if (error.message.includes("wrong-password")) {
+              toast.error("Incorrect password", {
+                style: {
+                  background: "#ef4444",
+                  color: "#ffffff",
+                },
+              });
+            } else {
+              toast.error(`Authentication error: ${error.message}`, {
+                style: {
+                  background: "#ef4444",
+                  color: "#ffffff",
+                },
+              });
+            }
           }
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Form submission error:", error);
-      toast.error(`Error: ${error.message}`, {
-        style: {
-          background: "#ef4444",
-          color: "#ffffff",
-        },
-      });
+      if (error instanceof Error) {
+        toast.error(`Error: ${error.message}`, {
+          style: {
+            background: "#ef4444",
+            color: "#ffffff",
+          },
+        });
+      }
     }
   }
 

@@ -5,12 +5,28 @@ import { getRandomInterviewCover } from "@/lib/utils";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./DisplayTechIcons";
+
+interface InterviewCardProps {
+  id: string;
+  role: string;
+  type: string;
+  level: string;
+  techstack: string[];
+  questions: string[];
+  finalized: boolean;
+  coverImage: string;
+  createdAt: string;
+}
+
 const InterviewCard = ({
-  interviewId,
-  userId,
+  id,
   role,
   type,
+  level,
   techstack,
+  questions,
+  finalized,
+  coverImage,
   createdAt,
 }: InterviewCardProps) => {
   const feedback = null as Feedback | null;
@@ -27,14 +43,14 @@ const InterviewCard = ({
           </div>
 
           <Image
-            src={getRandomInterviewCover()}
-            alt="cover image"
-            width={90}
-            height={90}
-            className="rounded-full object-fit size-[90px]"
+            src={coverImage}
+            alt={role}
+            width={120}
+            height={120}
+            className="rounded-lg object-cover"
           />
 
-          <h3 className="mt-5 capitalize">{role} Interview</h3>
+          <h3 className="mt-5 capitalize">{role}</h3>
           <div className="flex flex-row gap-5 mt-5">
             <div className="flex flex-row gap-2">
               <Image
@@ -62,11 +78,7 @@ const InterviewCard = ({
           <DisplayTechIcons techStack={techstack} />
           <Button className="btn-primary">
             <Link
-              href={
-                feedback
-                  ? `/interview/${interviewId}/feedback`
-                  : `/interview/${interviewId}`
-              }
+              href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
             >
               {feedback ? "Check Feedback" : "View Interview"}
             </Link>
