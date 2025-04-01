@@ -10,12 +10,21 @@ export async function createFeedback(params: CreateFeedbackParams) {
   const { interviewId, userId, transcript, feedbackId } = params;
 
   try {
+    console.log("Starting feedback generation for interview:", interviewId);
+
+    if (!transcript || transcript.length === 0) {
+      console.error("Error: Empty transcript for interview", interviewId);
+      return { success: false, error: "Empty transcript" };
+    }
+
     const formattedTranscript = transcript
       .map(
         (sentence: { role: string; content: string }) =>
           `- ${sentence.role}: ${sentence.content}\n`
       )
       .join("");
+
+    console.log("Transcript formatted, generating feedback...");
 
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
@@ -38,9 +47,12 @@ export async function createFeedback(params: CreateFeedbackParams) {
         "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
     });
 
+    console.log("Feedback generated successfully", object);
+
     const feedback = {
       interviewId: interviewId,
       userId: userId,
+      transcript: transcript,
       totalScore: object.totalScore,
       categoryScores: object.categoryScores,
       strengths: object.strengths,
@@ -53,16 +65,28 @@ export async function createFeedback(params: CreateFeedbackParams) {
 
     if (feedbackId) {
       feedbackRef = db.collection("feedback").doc(feedbackId);
+      console.log("Updating existing feedback:", feedbackId);
     } else {
       feedbackRef = db.collection("feedback").doc();
+      console.log("Creating new feedback with ID:", feedbackRef.id);
     }
 
     await feedbackRef.set(feedback);
+    console.log("Feedback saved successfully to Firestore");
 
     return { success: true, feedbackId: feedbackRef.id };
   } catch (error) {
     console.error("Error saving feedback:", error);
-    return { success: false };
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+      });
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
